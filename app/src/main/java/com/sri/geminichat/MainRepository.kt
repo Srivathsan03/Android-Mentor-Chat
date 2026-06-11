@@ -21,7 +21,7 @@ class MainRepository {
         try {
             Log.d("TAG", "geminiResponse: request sent - $prompt")
             val response = client.models.generateContent(
-                "gemini-2.5-flash",
+                "gemma-4-26b-a4b-it",
                 prompt,
                 GenerateContentConfig.builder()
                     .build()

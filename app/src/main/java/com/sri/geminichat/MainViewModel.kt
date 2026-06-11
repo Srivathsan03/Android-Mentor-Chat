@@ -23,7 +23,7 @@ class MainViewModel: ViewModel() {
         isEnabled.value = false
 
         viewModelScope.launch {
-            val resp = repository.geminiResponse(prompt)
+            val resp = repository.geminiResponse(chatHistory.value.toString() + prompt)
             val geminiMessage = ChatHistory(sender = Sender.GEMINI, message = resp)
             chatHistory.update {
                 it+geminiMessage
