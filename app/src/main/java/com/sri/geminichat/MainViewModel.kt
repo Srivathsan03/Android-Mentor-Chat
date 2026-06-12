@@ -6,29 +6,37 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
     val repository = MainRepository()
 
     val chatHistory = MutableStateFlow<List<ChatHistory>>(emptyList())
-    val isEnabled = MutableStateFlow<Boolean>(true)
 
     fun sendMessage(
         prompt: String
     ) {
         val userMessage = ChatHistory(sender = Sender.USER, message = prompt)
-        chatHistory.update {
-            it+userMessage
-        }
-        isEnabled.value = false
+        chatHistory.update { it + userMessage }
 
         viewModelScope.launch {
-            val resp = repository.geminiResponse(chatHistory.value.toString() + prompt)
-            val geminiMessage = ChatHistory(sender = Sender.GEMINI, message = resp)
-            chatHistory.update {
-                it+geminiMessage
+            val fullPrompt = chatHistory.value.joinToString("\n") { history ->
+                "${history.sender.name}: ${history.message}"
             }
-            isEnabled.value = true
+
+            chatHistory.update { it + ChatHistory(sender = Sender.GEMINI, message = "") }
+
+            repository.streamResponse(fullPrompt).collect { chunk ->
+                chatHistory.update { list ->
+                    val newList = list.toMutableList()
+                    val lastIndex = newList.lastIndex
+                    if (lastIndex >= 0 && newList[lastIndex].sender == Sender.GEMINI) {
+                        val currentMessage = newList[lastIndex].message
+                        newList[lastIndex] =
+                            newList[lastIndex].copy(message = currentMessage + chunk)
+                    }
+                    newList
+                }
+            }
         }
     }
 }

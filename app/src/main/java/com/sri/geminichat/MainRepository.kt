@@ -5,7 +5,9 @@ import com.google.genai.Client
 import com.google.genai.errors.ClientException
 import com.google.genai.types.GenerateContentConfig
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class MainRepository {
 
@@ -15,25 +17,27 @@ class MainRepository {
             .build()
     }
 
-    suspend fun geminiResponse(
+    fun streamResponse(
         prompt: String
-    ): String = withContext(Dispatchers.IO) {
+    ): Flow<String> = flow {
         try {
             Log.d("TAG", "geminiResponse: request sent - $prompt")
-            val response = client.models.generateContent(
-                "gemma-4-26b-a4b-it",
+            val stream = client.models.generateContentStream(
+                "gemma-4-31b-it",
                 prompt,
                 GenerateContentConfig.builder()
                     .build()
             )
-            Log.d("TAG", "geminiResponse: ${response.text()}")
-            return@withContext response.text() ?: ""
+            for (chunk in stream) {
+                emit(chunk.text() ?: "")
+                Log.d("TAG", "geminiResponse: ${chunk.text()}")
+            }
         } catch (e: ClientException) {
             e.printStackTrace()
-            return@withContext "Client error ${e.code()}: ${e.message()}}"
+            emit("Client error ${e.code()}: ${e.message()}}")
         } catch (e: Exception) {
             e.printStackTrace()
-            return@withContext "Error: ${e.message}"
+            emit("Error: ${e.message}")
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }

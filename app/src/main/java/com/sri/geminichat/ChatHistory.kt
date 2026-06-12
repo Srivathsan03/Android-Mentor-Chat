@@ -2,7 +2,7 @@ package com.sri.geminichat
 
 data class ChatHistory(
     val sender: Sender,
-    val message: String
+    var message: String
 )
 
 enum class Sender {
