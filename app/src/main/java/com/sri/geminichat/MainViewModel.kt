@@ -25,7 +25,10 @@ class MainViewModel : ViewModel() {
 
             chatHistory.update { it + ChatHistory(sender = Sender.GEMINI, message = "Thinking...") }
 
-            repository.streamResponse(fullPrompt).collect { chunk ->
+            repository.streamResponse(
+                prompt = fullPrompt,
+                model = AIModel.GEMINI_3_1_FLASH_LITE
+            ).collect { chunk ->
                 if (chunk.isNotEmpty()) {
                     chatHistory.update { list ->
                         val newList = list.toMutableList()

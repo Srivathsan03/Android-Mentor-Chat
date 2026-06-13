@@ -18,12 +18,13 @@ class MainRepository {
     }
 
     fun streamResponse(
-        prompt: String
+        prompt: String,
+        model: AIModel = AIModel.GEMINI_3_1_FLASH_LITE
     ): Flow<String> = flow {
         try {
             Log.d("TAG", "geminiResponse: request sent - $prompt")
             val stream = client.models.generateContentStream(
-                "gemma-4-31b-it",
+                model.modelId,
                 prompt,
                 GenerateContentConfig.builder()
                     .build()
