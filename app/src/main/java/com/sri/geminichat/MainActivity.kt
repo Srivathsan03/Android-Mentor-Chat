@@ -31,11 +31,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sri.geminichat.ui.theme.GeminiChatTheme
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +61,7 @@ fun ChatScreen(viewModel: MainViewModel) {
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Gemini Chat") },
+                title = { Text(stringResource(R.string.app_name)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -108,7 +110,7 @@ fun ChatScreen(
                         .padding(8.dp),
                     horizontalAlignment = if (isGemini) Alignment.End else Alignment.Start
                 ) {
-                    Text(
+                    MarkdownText(
                         modifier = Modifier
                             .background(
                                 color = if (isGemini) MaterialTheme.colorScheme.secondaryContainer
@@ -116,9 +118,11 @@ fun ChatScreen(
                                 shape = MaterialTheme.shapes.medium
                             )
                             .padding(12.dp),
-                        text = chatHistory.message,
-                        color = if (isGemini) MaterialTheme.colorScheme.onSecondaryContainer
-                        else MaterialTheme.colorScheme.onSurfaceVariant
+                        markdown = chatHistory.message,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = if (isGemini) MaterialTheme.colorScheme.onSecondaryContainer
+                            else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     )
                 }
             }
