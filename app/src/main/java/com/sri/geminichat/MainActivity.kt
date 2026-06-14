@@ -85,12 +85,12 @@ fun ChatScreen(
             .fillMaxSize()
             .imePadding()
     ) {
-        val chatHistoryList = viewModel.chatHistory.collectAsStateWithLifecycle()
+        val chatHistoryList = viewModel.session.collectAsStateWithLifecycle().value.messages
         val listState = rememberLazyListState()
 
-        LaunchedEffect(chatHistoryList.value.size) {
-            if (chatHistoryList.value.isNotEmpty()) {
-                listState.animateScrollToItem(chatHistoryList.value.lastIndex)
+        LaunchedEffect(chatHistoryList.size) {
+            if (chatHistoryList.isNotEmpty()) {
+                listState.animateScrollToItem(chatHistoryList.lastIndex)
             }
         }
 
@@ -100,8 +100,8 @@ fun ChatScreen(
                 .weight(1f)
                 .fillMaxSize()
         ) {
-            items(chatHistoryList.value.size) { index ->
-                val chatHistory = chatHistoryList.value[index]
+            items(chatHistoryList.size) { index ->
+                val chatHistory = chatHistoryList[index]
                 val isGemini = chatHistory.sender == Sender.GEMINI
 
                 Column(
