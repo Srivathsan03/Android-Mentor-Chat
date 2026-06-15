@@ -11,7 +11,7 @@ Android Mentor Chat is an Android application that demonstrates how to integrate
 - **Markdown Support**: Full Markdown rendering for AI responses (code blocks, bold text, lists, etc.) using `compose-markdown`.
 - **Material 3 Design**: Uses the latest Material Design components and dynamic color system.
 
-## 🏗 Architecture
+## Architecture
 
 ```text
 Compose UI
@@ -43,6 +43,8 @@ Streaming Response
 Compose UI
 ```
 
+## Tech Stack
+
 - **Language**: [Kotlin](https://kotlinlang.org/)
 - **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose)
 - **Architecture**: MVVM (Model-View-ViewModel)
@@ -52,7 +54,7 @@ Compose UI
 - **Markdown**: `compose-markdown` library
 - **Dependency Management**: Gradle Version Catalog (`libs.versions.toml`)
 
-## 🚀 Setup & Installation
+## Setup & Installation
 
 ### Prerequisites
 - Android Studio Ladybug (or newer)
@@ -67,7 +69,7 @@ Compose UI
    ```
 3. **Build**: Sync Gradle and run the `:app` module.
 
-## 📂 Project Structure
+## Project Structure
 
 - `MainActivity`: The main entry point and UI container.
 - `MainViewModel`: Manages UI state and business logic.
@@ -76,19 +78,19 @@ Compose UI
 - `ChatHistory`: Represents individual chat messages.
 - `ChatRunner`: Orchestrates the chat lifecycle and LLM interactions.
 
-## 🧠 AI Concepts Explored
+## AI Concepts Explored
 
 - **Agent Instructions**: Defining specific personas and boundaries for the AI.
 - **Context Management**: Passing historical messages to maintain conversation flow.
 - **Session Lifecycle**: Managing unique chat IDs and message lists.
 - **Streaming LLM Responses**: Handling partial updates for a more responsive UI.
 
-## 🗺 Roadmap
+## Roadmap
 - [ ] **Dependency Injection**: Implement Hilt for better decoupling.
 - [ ] **Multi-Session Support**: Save and switch between different chat sessions.
 - [ ] **Unit Testing**: Add tests for the ViewModel and Repository layers.
 - [ ] **Offline Cache**: Use Room to store chat history locally.
 - [ ] **Tool Calling**: Allow the agent to perform specific Android-related tasks.
 
-## 📄 License
+## License
 This project is for educational purposes.
