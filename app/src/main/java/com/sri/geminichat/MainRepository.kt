@@ -20,15 +20,20 @@ class MainRepository {
     }
 
     fun streamResponse(
-        prompt: String,
-        model: AIModel = AIModel.GEMINI_3_1_FLASH_LITE
+        model: AIModel,
+        instruction: String,
+        chatHistory: List<ChatHistory>
     ): Flow<String> = flow {
+        val fullPrompt = chatHistory.joinToString("\n") { history ->
+            "${history.sender.name}: ${history.message}"
+        }
+
         try {
-            Log.d("TAG", "request sent - $prompt")
+            Log.d("TAG", "request sent - $fullPrompt")
             val stream = client.models.generateContentStream(
                 model.modelId,
-                prompt,
-                createConfig()
+                fullPrompt,
+                createConfig(instruction)
             )
             for (chunk in stream) {
                 emit(chunk.text() ?: "")
@@ -43,13 +48,12 @@ class MainRepository {
         }
     }.flowOn(Dispatchers.IO)
 
-    fun createConfig(): GenerateContentConfig {
-        val agent: Agent = AndroidMentorService()
+    fun createConfig(instruction: String): GenerateContentConfig {
         val config = GenerateContentConfig.builder()
             .systemInstruction(
                 Content.fromParts(
                     Part.fromText(
-                        agent.instruction
+                        instruction
                     )
                 )
             )

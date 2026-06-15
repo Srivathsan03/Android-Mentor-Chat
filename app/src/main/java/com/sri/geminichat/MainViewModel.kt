@@ -10,7 +10,12 @@ import java.util.UUID
 
 class MainViewModel : ViewModel() {
 
+    private val selectedAgent:Agent = AgentType.INTERVIEWER.agent
     val repository = MainRepository()
+    val chatRunner = ChatRunner(
+        repository = repository,
+        agent = selectedAgent
+    )
 
     private val _session = MutableStateFlow(
         ChatSession(
@@ -28,10 +33,6 @@ class MainViewModel : ViewModel() {
         _session.update { it.copy(messages = it.messages + userMessage) }
 
         viewModelScope.launch {
-            val fullPrompt = session.value.messages.joinToString("\n") { history ->
-                "${history.sender.name}: ${history.message}"
-            }
-
             _session.update {
                 it.copy(
                     messages = it.messages + ChatHistory(
@@ -41,9 +42,9 @@ class MainViewModel : ViewModel() {
                 )
             }
 
-            repository.streamResponse(
-                prompt = fullPrompt,
-                model = AIModel.GEMINI_3_1_FLASH_LITE
+            chatRunner.streamResponse(
+                model = AIModel.GEMINI_3_1_FLASH_LITE,
+                session = _session.value
             ).collect { chunk ->
                 if (chunk.isNotEmpty()) {
                     _session.update { session ->

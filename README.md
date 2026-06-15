@@ -1,18 +1,17 @@
-# Android Mentor Chat
+# Android Mentor Chat 🤖
 
-Android Mentor Chat is an Android application that demonstrates how to integrate Gemini AI to create an Android-focused learning and mentoring experience.
+Android Mentor Chat is an Android application that demonstrates how to integrate Gemini AI to create an Android-focused learning and mentoring experience. Built with a focus on modern Android development practices, it features a fluid UI and real-time streaming responses.
 
-## Features
+## 🌟 Features
 
-- **Real-time Chat**: Interactive chat interface with user and AI messages.
+- **Real-time Chat**: Fluid interactive chat interface with distinct user and AI message bubbles.
 - **Android Mentor Agent**: Uses custom instructions to provide Android-focused guidance, learning support, and interview preparation.
 - **Gemini AI Integration**: Uses Google's Gemini models to provide AI-powered responses.
 - **Streaming AI Responses**: Responses are rendered in real-time as chunks are received from Gemini.
-- **Markdown Support**: Renders AI responses with full Markdown formatting for better readability.
-- **Modern Android Architecture**: Built using MVVM architecture, Kotlin Coroutines, and StateFlow.
-- **Jetpack Compose UI**: A fully declarative and reactive UI.
+- **Markdown Support**: Full Markdown rendering for AI responses (code blocks, bold text, lists, etc.) using `compose-markdown`.
+- **Material 3 Design**: Uses the latest Material Design components and dynamic color system.
 
-## Architecture
+## 🏗 Architecture
 
 ```text
 Compose UI
@@ -44,25 +43,31 @@ Streaming Response
 Compose UI
 ```
 
-## Tech Stack
+- **Language**: [Kotlin](https://kotlinlang.org/)
+- **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose)
+- **Architecture**: MVVM (Model-View-ViewModel)
+- **Concurrency**: Kotlin Coroutines & Flow (StateFlow)
+- **AI SDK**: [Google Generative AI SDK](https://github.com/google-gemini/generative-ai-android)
+- **Serialization**: Kotlinx Serialization
+- **Markdown**: `compose-markdown` library
+- **Dependency Management**: Gradle Version Catalog (`libs.versions.toml`)
 
-- **Language**: Kotlin
-- **UI Framework**: Jetpack Compose
-- **Concurrency**: Kotlin Coroutines & Flow
-- **AI SDK**: Google Generative AI SDK (`com.google.genai:google-genai`)
-- **Markdown Rendering**: `compose-markdown` library
-- **Dependency Management**: Gradle Version Catalog (libs.versions.toml)
+## 🚀 Setup & Installation
 
-## Setup
+### Prerequisites
+- Android Studio Ladybug (or newer)
+- Android SDK 34+
+- A Gemini API Key
 
-1. **Get a Gemini API Key**: Obtain an API key from [Google AI Studio](https://aistudio.google.com/).
-2. **Configure API Key**: Add your API key to a `local.properties` file in the root directory:
+### Configuration
+1. **Get a Gemini API Key**: Obtain one for free from [Google AI Studio](https://aistudio.google.com/).
+2. **Local Properties**: Add your key to your `local.properties` file in the root directory:
    ```properties
    GEMINI_API_KEY=your_api_key_here
    ```
-3. **Build and Run**: Open the project in Android Studio and run the app on an emulator or physical device.
+3. **Build**: Sync Gradle and run the `:app` module.
 
-## Project Structure
+## 📂 Project Structure
 
 - `MainActivity`: The main entry point and UI container.
 - `MainViewModel`: Manages UI state and business logic.
@@ -71,22 +76,19 @@ Compose UI
 - `ChatHistory`: Represents individual chat messages.
 - `ChatRunner`: Orchestrates the chat lifecycle and LLM interactions.
 
-## AI Concepts Explored
+## 🧠 AI Concepts Explored
 
-- Agent Instructions
-- Context Management
-- Session Concepts
-- Streaming LLM Responses
-- Agent Lifecycle
+- **Agent Instructions**: Defining specific personas and boundaries for the AI.
+- **Context Management**: Passing historical messages to maintain conversation flow.
+- **Session Lifecycle**: Managing unique chat IDs and message lists.
+- **Streaming LLM Responses**: Handling partial updates for a more responsive UI.
 
-## Future Enhancements
+## 🗺 Roadmap
+- [ ] **Dependency Injection**: Implement Hilt for better decoupling.
+- [ ] **Multi-Session Support**: Save and switch between different chat sessions.
+- [ ] **Unit Testing**: Add tests for the ViewModel and Repository layers.
+- [ ] **Offline Cache**: Use Room to store chat history locally.
+- [ ] **Tool Calling**: Allow the agent to perform specific Android-related tasks.
 
-- Memory Support
-- Tool Calling
-- Multiple AI Personas
-- Multi-Session Conversations
-- On-device LLM Integration
-
-## License
-
+## 📄 License
 This project is for educational purposes.
