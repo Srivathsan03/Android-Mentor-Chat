@@ -2,7 +2,7 @@
 
 Android Mentor Chat is an Android application that demonstrates how to integrate Gemini AI to create an Android-focused learning and mentoring experience. Built with a focus on modern Android development practices, it features a fluid UI and real-time streaming responses.
 
-## 🌟 Features
+## Features
 
 - **Real-time Chat**: Fluid interactive chat interface with distinct user and AI message bubbles.
 - **Android Mentor Agent**: Uses custom instructions to provide Android-focused guidance, learning support, and interview preparation.
