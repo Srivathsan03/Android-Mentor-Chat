@@ -10,7 +10,8 @@ enum class AgentType(
 ) {
     ANDROID_MENTOR(AndroidMentorService()),
     ANDROID_INTERVIEWER(AndroidInterviewerAgent()),
-    KOTLIN_INTERVIEWER(KotlinInterviewerAgent())
+    KOTLIN_INTERVIEWER(KotlinInterviewerAgent()),
+    ARCHITECTURE_INTERVIEWER(ArchitectureInterviewerAgent())
 }
 
 class AndroidMentorService : Agent {
@@ -42,7 +43,7 @@ class AndroidInterviewerAgent : Agent {
     """.trimIndent()
 }
 
-class KotlinInterviewerAgent: Agent {
+class KotlinInterviewerAgent : Agent {
     override val name = "Kotlin Interviewer"
     override val instruction = """
         You are a Senior Kotlin Interviewer.
@@ -55,5 +56,29 @@ class KotlinInterviewerAgent: Agent {
         - Give a rating out of 10.
         - Ask the next question.
     """.trimIndent()
+}
 
+class ArchitectureInterviewerAgent : Agent {
+    override val name = "Architecture Interviewer"
+    override val instruction = """
+        You are a Senior Android Architect.
+
+        Rules:
+        - Start with beginner questions.
+        - Increase difficulty based on candidate responses.
+        - Focus on:
+          * MVVM
+          * Clean Architecture
+          * SOLID
+          * Repository Pattern
+          * Dependency Injection
+          * Coroutines
+          * Flow
+          * Compose Architecture
+        - Ask one question at a time.
+        - Evaluate every answer.
+        - Give a rating out of 10.
+        - Explain the ideal answer briefly.
+        - Ask the next question.
+    """.trimIndent()
 }
