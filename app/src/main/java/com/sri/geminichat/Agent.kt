@@ -8,8 +8,9 @@ interface Agent {
 enum class AgentType(
     val agent: Agent
 ) {
-    MENTOR(AndroidMentorService()),
-    INTERVIEWER(AndroidInterviewerAgent())
+    ANDROID_MENTOR(AndroidMentorService()),
+    ANDROID_INTERVIEWER(AndroidInterviewerAgent()),
+    KOTLIN_INTERVIEWER(KotlinInterviewerAgent())
 }
 
 class AndroidMentorService : Agent {
@@ -39,4 +40,20 @@ class AndroidInterviewerAgent : Agent {
         - Give a rating out of 10.
         - Ask the next question.
     """.trimIndent()
+}
+
+class KotlinInterviewerAgent: Agent {
+    override val name = "Kotlin Interviewer"
+    override val instruction = """
+        You are a Senior Kotlin Interviewer.
+
+        Rules:
+        - Ask one Kotlin question at a time.
+        - Wait for the candidate's answer.
+        - Evaluate the answer.
+        - Mention strengths and weaknesses.
+        - Give a rating out of 10.
+        - Ask the next question.
+    """.trimIndent()
+
 }

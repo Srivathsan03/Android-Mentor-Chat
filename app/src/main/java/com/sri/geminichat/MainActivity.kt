@@ -18,7 +18,11 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +33,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -75,6 +83,7 @@ fun ChatScreen(viewModel: MainViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
@@ -93,7 +102,44 @@ fun ChatScreen(
                 listState.animateScrollToItem(chatHistoryList.lastIndex)
             }
         }
+        var isExpanded by remember { mutableStateOf(false) }
+        val selectedAgentState by viewModel.selectedAgent.collectAsStateWithLifecycle()
 
+        ExposedDropdownMenuBox(
+            modifier = Modifier.padding(8.dp),
+            expanded = isExpanded,
+            onExpandedChange = { isExpanded = !isExpanded }
+        ) {
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                value = selectedAgentState.name,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Current Agent") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+                },
+                colors = ExposedDropdownMenuDefaults.textFieldColors()
+            )
+            ExposedDropdownMenu(
+                expanded = isExpanded,
+                onDismissRequest = { isExpanded = false }
+            ) {
+                AgentType.entries.forEach { agentType ->
+                    DropdownMenuItem(
+                        text = { Text(agentType.agent.name) },
+                        onClick = {
+                            viewModel.selectAgent(agentType)
+                            isExpanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                        enabled = selectedAgentState != agentType.agent
+                    )
+                }
+            }
+        }
         LazyColumn(
             state = listState,
             modifier = Modifier

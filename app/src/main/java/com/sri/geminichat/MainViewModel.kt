@@ -3,6 +3,7 @@ package com.sri.geminichat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -10,13 +11,10 @@ import java.util.UUID
 
 class MainViewModel : ViewModel() {
 
-    private val selectedAgent:Agent = AgentType.INTERVIEWER.agent
-    val repository = MainRepository()
-    val chatRunner = ChatRunner(
-        repository = repository,
-        agent = selectedAgent
-    )
+    private val _selectedAgent: MutableStateFlow<Agent> =
+        MutableStateFlow(AgentType.ANDROID_MENTOR.agent)
 
+    val selectedAgent: StateFlow<Agent> = _selectedAgent.asStateFlow()
     private val _session = MutableStateFlow(
         ChatSession(
             chatId = UUID.randomUUID().toString(),
@@ -25,6 +23,24 @@ class MainViewModel : ViewModel() {
     )
 
     val session = _session.asStateFlow()
+
+    val repository = MainRepository()
+    var chatRunner: ChatRunner = ChatRunner(
+        repository = repository,
+        agent = _selectedAgent.value
+    )
+
+    fun selectAgent(agentType: AgentType) {
+        _selectedAgent.value = agentType.agent
+        _session.value = ChatSession(
+            chatId = UUID.randomUUID().toString(),
+            messages = listOf()
+        )
+        chatRunner = ChatRunner(
+            repository = repository,
+            agent = agentType.agent
+        )
+    }
 
     fun sendMessage(
         prompt: String

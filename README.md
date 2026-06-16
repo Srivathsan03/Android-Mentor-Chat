@@ -1,11 +1,15 @@
-# Android Mentor Chat 🤖
+# Android Mentor Chat
 
 Android Mentor Chat is an Android application that demonstrates how to integrate Gemini AI to create an Android-focused learning and mentoring experience. Built with a focus on modern Android development practices, it features a fluid UI and real-time streaming responses.
 
 ## Features
 
 - **Real-time Chat**: Fluid interactive chat interface with distinct user and AI message bubbles.
-- **Android Mentor Agent**: Uses custom instructions to provide Android-focused guidance, learning support, and interview preparation.
+- **Multiple AI Agents**:
+  - Android Mentor Agent
+  - Android Interviewer Agent
+  - Kotlin Interviewer Agent
+- **Agent Switching**: Dynamically switch between AI personas from the UI.
 - **Gemini AI Integration**: Uses Google's Gemini models to provide AI-powered responses.
 - **Streaming AI Responses**: Responses are rendered in real-time as chunks are received from Gemini.
 - **Markdown Support**: Full Markdown rendering for AI responses (code blocks, bold text, lists, etc.) using `compose-markdown`.
@@ -77,20 +81,50 @@ Compose UI
 - `ChatSession`: Maintains conversation history and session context.
 - `ChatHistory`: Represents individual chat messages.
 - `ChatRunner`: Orchestrates the chat lifecycle and LLM interactions.
+- `Agent`: Defines agent personality and instructions.
+- `AgentType`: Manages available AI agents.
 
 ## AI Concepts Explored
 
-- **Agent Instructions**: Defining specific personas and boundaries for the AI.
-- **Context Management**: Passing historical messages to maintain conversation flow.
-- **Session Lifecycle**: Managing unique chat IDs and message lists.
-- **Streaming LLM Responses**: Handling partial updates for a more responsive UI.
+- **Agent Instructions**
+   - Using system instructions to define the behavior and responsibilities of an AI agent.
+
+- **Agent Personalities**
+   - Implementing Android Mentor, Android Interviewer, and Kotlin Interviewer agents with distinct behaviors.
+
+- **Context Management**
+   - Building conversation context from chat history and sending it with each request.
+
+- **Session Lifecycle**
+   - Creating, maintaining, and resetting chat sessions based on user actions.
+
+- **Agent Switching**
+   - Dynamically switching between AI agents from the UI and starting a new session when required.
+
+- **ChatRunner Pattern**
+   - Introducing an orchestration layer between the ViewModel and Repository to manage agent-driven conversations.
+
+- **Streaming LLM Responses**
+   - Handling partial Gemini responses using Kotlin Flow and updating the UI in real time.
+
 
 ## Roadmap
-- [ ] **Dependency Injection**: Implement Hilt for better decoupling.
-- [ ] **Multi-Session Support**: Save and switch between different chat sessions.
-- [ ] **Unit Testing**: Add tests for the ViewModel and Repository layers.
-- [ ] **Offline Cache**: Use Room to store chat history locally.
-- [ ] **Tool Calling**: Allow the agent to perform specific Android-related tasks.
+
+- [x] Android Mentor Agent
+- [x] Android Interviewer Agent
+- [x] Kotlin Interviewer Agent
+- [x] Agent Switching
+
+### Next Steps
+
+- [ ] Dependency Injection (Hilt)
+- [ ] Multi-Session Support
+- [ ] Memory Support
+- [ ] Architecture Interview Agent
+- [ ] Tool Calling
+- [ ] Room Persistence
+- [ ] Unit Testing
+- [ ] On-device LLM Integration
 
 ## License
 This project is for educational purposes.
