@@ -21,8 +21,9 @@ class MainRepository {
 
     fun streamResponse(
         model: AIModel,
-        instruction: String,
-        chatHistory: List<ChatHistory>
+        agent: Agent,
+        chatHistory: List<ChatHistory>,
+        difficultyLevel: DifficultyLevel?
     ): Flow<String> = flow {
         val fullPrompt = chatHistory.joinToString("\n") { history ->
             "${history.sender.name}: ${history.message}"
@@ -33,7 +34,7 @@ class MainRepository {
             val stream = client.models.generateContentStream(
                 model.modelId,
                 fullPrompt,
-                createConfig(instruction)
+                createConfig(agent, difficultyLevel)
             )
             for (chunk in stream) {
                 emit(chunk.text() ?: "")
@@ -48,12 +49,37 @@ class MainRepository {
         }
     }.flowOn(Dispatchers.IO)
 
-    fun createConfig(instruction: String): GenerateContentConfig {
+    fun createConfig(
+        agent: Agent,
+        difficultyLevel: DifficultyLevel?
+    ): GenerateContentConfig {
+        val fullInstruction =
+            if (difficultyLevel != null) {
+                """
+                    ${agent.instruction}
+                    
+                    Interviewer Difficulty: ${difficultyLevel.name}
+
+                    Adjust questions according to the selected difficulty level.
+
+                    BEGINNER:
+                    - Ask basic concepts.
+                    - Avoid tricky questions.
+
+                    INTERMEDIATE:
+                    - Ask practical and scenario-based questions.
+
+                    SENIOR:
+                    - Ask architecture, trade-offs, and system design questions.
+                """.trimIndent()
+            } else {
+                agent.instruction
+            }
         val config = GenerateContentConfig.builder()
             .systemInstruction(
                 Content.fromParts(
                     Part.fromText(
-                        instruction
+                        fullInstruction
                     )
                 )
             )

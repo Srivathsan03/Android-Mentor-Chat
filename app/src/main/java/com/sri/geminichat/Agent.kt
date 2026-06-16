@@ -3,6 +3,7 @@ package com.sri.geminichat
 interface Agent {
     val name: String
     val instruction: String
+    val supportsDifficulty: Boolean
 }
 
 enum class AgentType(
@@ -26,6 +27,7 @@ class AndroidMentorService : Agent {
         - If question is unrelated to Android,
           politely refuse.
     """.trimIndent()
+    override val supportsDifficulty = false
 }
 
 class AndroidInterviewerAgent : Agent {
@@ -41,6 +43,7 @@ class AndroidInterviewerAgent : Agent {
         - Give a rating out of 10.
         - Ask the next question.
     """.trimIndent()
+    override val supportsDifficulty = true
 }
 
 class KotlinInterviewerAgent : Agent {
@@ -56,6 +59,7 @@ class KotlinInterviewerAgent : Agent {
         - Give a rating out of 10.
         - Ask the next question.
     """.trimIndent()
+    override val supportsDifficulty = true
 }
 
 class ArchitectureInterviewerAgent : Agent {
@@ -81,4 +85,11 @@ class ArchitectureInterviewerAgent : Agent {
         - Explain the ideal answer briefly.
         - Ask the next question.
     """.trimIndent()
+    override val supportsDifficulty = true
+}
+
+enum class DifficultyLevel {
+    BEGINNER,
+    INTERMEDIATE,
+    SENIOR
 }

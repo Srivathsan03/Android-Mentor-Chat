@@ -83,7 +83,6 @@ fun ChatScreen(viewModel: MainViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
@@ -102,43 +101,12 @@ fun ChatScreen(
                 listState.animateScrollToItem(chatHistoryList.lastIndex)
             }
         }
-        var isExpanded by remember { mutableStateOf(false) }
-        val selectedAgentState by viewModel.selectedAgent.collectAsStateWithLifecycle()
-
-        ExposedDropdownMenuBox(
-            modifier = Modifier.padding(8.dp),
-            expanded = isExpanded,
-            onExpandedChange = { isExpanded = !isExpanded }
-        ) {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-                value = selectedAgentState.name,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Current Agent") },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-                },
-                colors = ExposedDropdownMenuDefaults.textFieldColors()
-            )
-            ExposedDropdownMenu(
-                expanded = isExpanded,
-                onDismissRequest = { isExpanded = false }
-            ) {
-                AgentType.entries.forEach { agentType ->
-                    DropdownMenuItem(
-                        text = { Text(agentType.agent.name) },
-                        onClick = {
-                            viewModel.selectAgent(agentType)
-                            isExpanded = false
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                        enabled = selectedAgentState != agentType.agent
-                    )
-                }
-            }
+        var agentType by remember { mutableStateOf<AgentType>(AgentType.ANDROID_MENTOR) }
+        AgentSelector(viewModel = viewModel) { type ->
+            agentType = type
+        }
+        if (agentType.agent.supportsDifficulty) {
+            DifficultySelector(viewModel = viewModel)
         }
         LazyColumn(
             state = listState,
@@ -199,6 +167,91 @@ fun ChatScreen(
                     imageVector = Icons.AutoMirrored.Filled.Send,
                     contentDescription = "Send",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AgentSelector(viewModel: MainViewModel, onAgentSelected: (agentType: AgentType) -> Unit) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val selectedAgentState by viewModel.selectedAgent.collectAsStateWithLifecycle()
+
+    ExposedDropdownMenuBox(
+        modifier = Modifier.padding(8.dp),
+        expanded = isExpanded,
+        onExpandedChange = { isExpanded = !isExpanded }
+    ) {
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+            value = selectedAgentState.name,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Current Agent") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }
+        ) {
+            AgentType.entries.forEach { agentType ->
+                DropdownMenuItem(
+                    text = { Text(agentType.agent.name) },
+                    onClick = {
+                        onAgentSelected(agentType)
+                        viewModel.selectAgent(agentType)
+                        isExpanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    enabled = selectedAgentState != agentType.agent
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DifficultySelector(viewModel: MainViewModel) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        modifier = Modifier.padding(8.dp),
+        expanded = isExpanded,
+        onExpandedChange = { isExpanded = !isExpanded }
+    ) {
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+            value = viewModel.difficultyLevel.collectAsStateWithLifecycle().value?.name ?: "",
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Difficulty Level") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }
+        ) {
+            DifficultyLevel.entries.forEach { difficultyLevel ->
+                DropdownMenuItem(
+                    text = { Text(difficultyLevel.name) },
+                    onClick = {
+                        viewModel.selectDifficulty(difficultyLevel)
+                        isExpanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                 )
             }
         }

@@ -13,15 +13,18 @@ class MainViewModel : ViewModel() {
 
     private val _selectedAgent: MutableStateFlow<Agent> =
         MutableStateFlow(AgentType.ANDROID_MENTOR.agent)
-
     val selectedAgent: StateFlow<Agent> = _selectedAgent.asStateFlow()
+
+    private val _difficultyLevel: MutableStateFlow<DifficultyLevel?> =
+        MutableStateFlow(DifficultyLevel.BEGINNER)
+    val difficultyLevel: StateFlow<DifficultyLevel?> = _difficultyLevel.asStateFlow()
+
     private val _session = MutableStateFlow(
         ChatSession(
             chatId = UUID.randomUUID().toString(),
             messages = listOf()
         )
     )
-
     val session = _session.asStateFlow()
 
     val repository = MainRepository()
@@ -32,6 +35,8 @@ class MainViewModel : ViewModel() {
 
     fun selectAgent(agentType: AgentType) {
         _selectedAgent.value = agentType.agent
+        if(!agentType.agent.supportsDifficulty)
+            _difficultyLevel.value = null
         _session.value = ChatSession(
             chatId = UUID.randomUUID().toString(),
             messages = listOf()
@@ -40,6 +45,16 @@ class MainViewModel : ViewModel() {
             repository = repository,
             agent = agentType.agent
         )
+    }
+
+    fun selectDifficulty(level: DifficultyLevel) {
+        if(_difficultyLevel.value != level) {
+            _difficultyLevel.value = level
+            _session.value = ChatSession(
+                chatId = UUID.randomUUID().toString(),
+                messages = listOf()
+            )
+        }
     }
 
     fun sendMessage(
@@ -60,7 +75,8 @@ class MainViewModel : ViewModel() {
 
             chatRunner.streamResponse(
                 model = AIModel.GEMINI_3_1_FLASH_LITE,
-                session = _session.value
+                session = _session.value,
+                difficultyLevel = _difficultyLevel.value
             ).collect { chunk ->
                 if (chunk.isNotEmpty()) {
                     _session.update { session ->

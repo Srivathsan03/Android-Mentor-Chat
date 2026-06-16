@@ -9,7 +9,9 @@ Android Mentor Chat is an Android application that demonstrates how to integrate
   - Android Mentor Agent
   - Android Interviewer Agent
   - Kotlin Interviewer Agent
+  - Architecture Interview Agent
 - **Agent Switching**: Dynamically switch between AI personas from the UI.
+- **Interview Difficulty Levels**: Configure Beginner, Intermediate, and Senior interview modes for interviewer agents.
 - **Gemini AI Integration**: Uses Google's Gemini models to provide AI-powered responses.
 - **Streaming AI Responses**: Responses are rendered in real-time as chunks are received from Gemini.
 - **Markdown Support**: Full Markdown rendering for AI responses (code blocks, bold text, lists, etc.) using `compose-markdown`.
@@ -34,7 +36,11 @@ Gemini API
 ```text
 User Message
     ↓
-Android Mentor Instructions
+Selected Agent
+    ↓
+Selected Difficulty
+    ↓
+Agent Instructions
     ↓
 Chat Session Context
     ↓
@@ -90,7 +96,10 @@ Compose UI
    - Using system instructions to define the behavior and responsibilities of an AI agent.
 
 - **Agent Personalities**
-   - Implementing Android Mentor, Android Interviewer, and Kotlin Interviewer agents with distinct behaviors.
+  - Implementing Android Mentor, Android Interviewer, Kotlin Interviewer, and Architecture Interviewer agents with distinct behaviors.
+
+- **Runtime Agent Configuration**
+  - Modifying agent behavior dynamically using difficulty levels without changing the underlying agent implementation.
 
 - **Context Management**
    - Building conversation context from chat history and sending it with each request.
@@ -113,7 +122,9 @@ Compose UI
 - [x] Android Mentor Agent
 - [x] Android Interviewer Agent
 - [x] Kotlin Interviewer Agent
+- [x] Architecture Interviewer Agent
 - [x] Agent Switching
+- [x] Difficulty Levels
 
 ### Next Steps
 

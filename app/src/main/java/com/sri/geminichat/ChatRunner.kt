@@ -9,13 +9,15 @@ class ChatRunner(
 
     fun streamResponse(
         model: AIModel,
-        session: ChatSession
+        session: ChatSession,
+        difficultyLevel: DifficultyLevel?
     ): Flow<String> {
 
         return repository.streamResponse(
             model = model,
-            instruction = agent.instruction,
-            chatHistory = session.messages
+            agent = agent,
+            chatHistory = session.messages,
+            difficultyLevel = difficultyLevel
         )
     }
 }
