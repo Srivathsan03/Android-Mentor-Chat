@@ -35,7 +35,7 @@ class MainViewModel : ViewModel() {
 
     fun selectAgent(agentType: AgentType) {
         _selectedAgent.value = agentType.agent
-        if(!agentType.agent.supportsDifficulty)
+        if (!agentType.agent.supportsDifficulty)
             _difficultyLevel.value = null
         _session.value = ChatSession(
             chatId = UUID.randomUUID().toString(),
@@ -48,7 +48,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun selectDifficulty(level: DifficultyLevel) {
-        if(_difficultyLevel.value != level) {
+        if (_difficultyLevel.value != level) {
             _difficultyLevel.value = level
             _session.value = ChatSession(
                 chatId = UUID.randomUUID().toString(),
