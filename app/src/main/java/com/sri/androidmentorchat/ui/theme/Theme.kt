@@ -1,4 +1,4 @@
-package com.sri.geminichat.ui.theme
+package com.sri.androidmentorchat.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

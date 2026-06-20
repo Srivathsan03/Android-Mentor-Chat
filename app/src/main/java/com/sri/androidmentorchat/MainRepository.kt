@@ -1,4 +1,4 @@
-package com.sri.geminichat
+package com.sri.androidmentorchat
 
 import android.util.Log
 import com.google.genai.Client

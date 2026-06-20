@@ -1,4 +1,4 @@
-package com.sri.geminichat
+package com.sri.androidmentorchat
 
 data class ChatHistory(
     val sender: Sender,

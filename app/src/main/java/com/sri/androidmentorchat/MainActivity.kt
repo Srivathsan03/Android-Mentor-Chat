@@ -1,4 +1,4 @@
-package com.sri.geminichat
+package com.sri.androidmentorchat
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -44,7 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sri.geminichat.ui.theme.GeminiChatTheme
+import com.sri.androidmentorchat.ui.theme.GeminiChatTheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 class MainActivity : ComponentActivity() {

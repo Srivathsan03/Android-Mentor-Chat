@@ -1,4 +1,4 @@
-package com.sri.geminichat
+package com.sri.androidmentorchat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

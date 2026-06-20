@@ -14,11 +14,11 @@ val geminiApiKey =
 
 
 android {
-    namespace = "com.sri.geminichat"
+    namespace = "com.sri.androidmentorchat"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.sri.geminichat"
+        applicationId = "com.sri.androidmentorchat"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

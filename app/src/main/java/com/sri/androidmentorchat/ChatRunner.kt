@@ -1,4 +1,4 @@
-package com.sri.geminichat
+package com.sri.androidmentorchat
 
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +12,6 @@ class ChatRunner(
         session: ChatSession,
         difficultyLevel: DifficultyLevel?
     ): Flow<String> {
-
         return repository.streamResponse(
             model = model,
             agent = agent,
