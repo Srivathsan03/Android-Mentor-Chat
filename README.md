@@ -12,17 +12,23 @@ The application demonstrates how Gemini can be used to create specialized AI age
 
 <h3>Android Mentor Agent</h3>
 
+<p>
 <img src="screenshots/Android%20Mentor.png" width="300"/>
+</p>
 
 <h3>Android Interviewer Agent</h3>
 
+<p>
 <img src="screenshots/Android%20Interviewer%201.png" width="300"/>
 <img src="screenshots/Android%20Interviewer%202.png" width="300"/>
+</p>
 
 <h3>Architecture Interviewer Agent</h3>
 
+<p>
 <img src="screenshots/Android%20Architect%201.png" width="300"/>
 <img src="screenshots/Android%20Architect%202.png" width="300"/>
+</p>
 
 ## Features
 
