@@ -55,10 +55,14 @@ class MainViewModel(
         agent = _selectedAgent.value
     )
 
+    private val _isChatClearable = MutableStateFlow(true)
+    val isChatClearable: StateFlow<Boolean> = _isChatClearable.asStateFlow()
+
     fun selectAgent(agentType: AgentType) {
         _selectedAgent.value = agentType.agent
         if (!agentType.agent.supportsDifficulty)
             _difficultyLevel.value = null
+        _isChatClearable.value = agentType.agent == AgentType.ANDROID_MENTOR.agent
         _chatSession.value = ChatSession(
             chatId = UUID.randomUUID().toString(),
             messages = listOf()
@@ -84,6 +88,7 @@ class MainViewModel(
             it.copy(messages = chatHistoryList)
         }
     }
+
     fun sendMessage(
         prompt: String
     ) {
@@ -127,6 +132,14 @@ class MainViewModel(
             val response = responseBuilder.toString()
             saveMessage(text = response, sender = SenderType.GEMINI.name)
         }
+    }
+
+    fun clearChatSession() {
+        clearChat()
+        _chatSession.value = ChatSession(
+            chatId = UUID.randomUUID().toString(),
+            messages = listOf()
+        )
     }
 
     val messages = chatRepository.getAllMessages()
