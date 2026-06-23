@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = [MessageEntity::class], version = 1, exportSchema = false)
-abstract class MentorDatabase: RoomDatabase() {
+abstract class MentorDatabase : RoomDatabase() {
 
     abstract fun messageDao(): MessageDao
 

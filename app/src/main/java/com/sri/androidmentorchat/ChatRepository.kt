@@ -10,7 +10,7 @@ class ChatRepository(
         return messageDao.getAllMessages()
     }
 
-    suspend fun insertMessages(messageEntity: MessageEntity){
+    suspend fun insertMessages(messageEntity: MessageEntity) {
         messageDao.insertMessage(messageEntity)
     }
 
