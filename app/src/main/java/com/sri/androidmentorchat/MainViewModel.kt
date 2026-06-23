@@ -79,6 +79,11 @@ class MainViewModel(
         }
     }
 
+    fun updateChatSession(chatHistoryList: List<ChatHistory>) {
+        _chatSession.update {
+            it.copy(messages = chatHistoryList)
+        }
+    }
     fun sendMessage(
         prompt: String
     ) {
@@ -140,16 +145,6 @@ class MainViewModel(
             )
             chatRepository.insertMessages(messageEntity)
         }
-    }
-
-    fun getMessages(): List<MessageEntity> {
-        val messages = chatRepository.getAllMessages()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                initialValue = emptyList()
-            )
-        return messages.value
     }
 
     fun clearChat() {

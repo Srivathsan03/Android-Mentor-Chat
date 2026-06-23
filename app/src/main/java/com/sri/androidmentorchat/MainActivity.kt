@@ -128,6 +128,7 @@ fun ChatScreen(
                     index = chatHistoryList.size,
                     scrollOffset = Int.MAX_VALUE
                 )
+                viewModel.updateChatSession(chatHistoryList)
             }
             items(chatHistoryList.size) { index ->
                 val chatHistory = chatHistoryList[index]
