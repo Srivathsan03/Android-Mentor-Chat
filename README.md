@@ -44,6 +44,8 @@ The application demonstrates how Gemini can be used to create specialized AI age
 - **Streaming AI Responses**: Responses are rendered in real-time as chunks are received from Gemini.
 - **Markdown Support**: Full Markdown rendering for AI responses (code blocks, bold text, lists, etc.) using `compose-markdown`.
 - **Material 3 Design**: Uses the latest Material Design components and dynamic color system.
+- **Persistent Chat History (Room)**: Chat conversations are saved locally using Room Database and restored on app restart.
+- **Clear Chat Feature**: Users can clear chat history for the current session or reset conversations.
 
 ## Architecture
 
@@ -77,6 +79,26 @@ ChatRunner
 Gemini API
     ↓
 Streaming Response
+    ↓
+Compose UI
+```
+
+## Data Persistence Flow
+
+```text
+User Message
+    ↓
+ViewModel
+    ↓
+Room DB (Save ChatHistory)
+    ↓
+ChatRunner
+    ↓
+Gemini API
+    ↓
+Streaming Response
+    ↓
+Room DB (Update ChatHistory)
     ↓
 Compose UI
 ```
@@ -115,6 +137,7 @@ Compose UI
 - `ChatSession`: Maintains conversation history and session context.
 - `ChatHistory`: Represents individual chat messages.
 - `ChatRunner`: Coordinates chat sessions, agent selection, and Gemini interactions.
+- `Room Database`: Stores chat sessions and messages locally.
 - `Agent`: Defines agent personality and instructions.
 - `AgentType`: Manages available AI agents.
 
@@ -168,6 +191,8 @@ Upcoming areas include:
 - [x] Streaming Responses
 - [x] Context Management
 - [x] Session Lifecycle Management
+- [x] Room Persistence (Chat History Storage)
+- [x] Clear Chat Feature
 
 ### Next Steps
 
@@ -175,6 +200,6 @@ Upcoming areas include:
 - [ ] Multi-Session Support
 - [ ] Memory Support
 - [ ] Tool Calling
-- [ ] Room Persistence
+- [ ] Room Persistence (sync/export)
 - [ ] Unit Testing
 - [ ] On-device LLM Integration
