@@ -1,15 +1,38 @@
 package com.sri.androidmentorchat
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class MainViewModel : ViewModel() {
+class MainViewModel(
+    private val aiRepository: AiRepository,
+    private val chatRepository: ChatRepository
+) : ViewModel() {
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as Application)
+                val aiRepository = AiRepository()
+                val chatRepository = ChatRepository(
+                    MentorDatabase.getDatabase(application).messageDao()
+                )
+                MainViewModel(aiRepository, chatRepository)
+            }
+        }
+    }
 
     private val _selectedAgent: MutableStateFlow<Agent> =
         MutableStateFlow(AgentType.ANDROID_MENTOR.agent)
@@ -19,17 +42,16 @@ class MainViewModel : ViewModel() {
         MutableStateFlow(DifficultyLevel.BEGINNER)
     val difficultyLevel: StateFlow<DifficultyLevel?> = _difficultyLevel.asStateFlow()
 
-    private val _session = MutableStateFlow(
+    private val _chatSession = MutableStateFlow(
         ChatSession(
             chatId = UUID.randomUUID().toString(),
             messages = listOf()
         )
     )
-    val session = _session.asStateFlow()
+    val chatSession = _chatSession.asStateFlow()
 
-    val repository = MainRepository()
     var chatRunner: ChatRunner = ChatRunner(
-        repository = repository,
+        repository = aiRepository,
         agent = _selectedAgent.value
     )
 
@@ -37,12 +59,12 @@ class MainViewModel : ViewModel() {
         _selectedAgent.value = agentType.agent
         if (!agentType.agent.supportsDifficulty)
             _difficultyLevel.value = null
-        _session.value = ChatSession(
+        _chatSession.value = ChatSession(
             chatId = UUID.randomUUID().toString(),
             messages = listOf()
         )
         chatRunner = ChatRunner(
-            repository = repository,
+            repository = aiRepository,
             agent = agentType.agent
         )
     }
@@ -50,7 +72,7 @@ class MainViewModel : ViewModel() {
     fun selectDifficulty(level: DifficultyLevel) {
         if (_difficultyLevel.value != level) {
             _difficultyLevel.value = level
-            _session.value = ChatSession(
+            _chatSession.value = ChatSession(
                 chatId = UUID.randomUUID().toString(),
                 messages = listOf()
             )
@@ -60,14 +82,16 @@ class MainViewModel : ViewModel() {
     fun sendMessage(
         prompt: String
     ) {
-        val userMessage = ChatHistory(sender = Sender.USER, message = prompt)
-        _session.update { it.copy(messages = it.messages + userMessage) }
+        val userMessage = ChatHistory(senderType = SenderType.USER, message = prompt)
+        _chatSession.update { it.copy(messages = it.messages + userMessage) }
+        saveMessage(text = prompt, sender = SenderType.USER.name)
 
+        val responseBuilder = StringBuilder()
         viewModelScope.launch {
-            _session.update {
+            _chatSession.update {
                 it.copy(
                     messages = it.messages + ChatHistory(
-                        sender = Sender.GEMINI,
+                        senderType = SenderType.GEMINI,
                         message = "Thinking..."
                     )
                 )
@@ -75,14 +99,15 @@ class MainViewModel : ViewModel() {
 
             chatRunner.streamResponse(
                 model = AIModel.GEMINI_3_1_FLASH_LITE,
-                session = _session.value,
+                session = _chatSession.value,
                 difficultyLevel = _difficultyLevel.value
             ).collect { chunk ->
                 if (chunk.isNotEmpty()) {
-                    _session.update { session ->
+                    responseBuilder.append(chunk)
+                    _chatSession.update { session ->
                         val newList = session.messages.toMutableList()
                         val lastIndex = newList.lastIndex
-                        if (lastIndex >= 0 && newList[lastIndex].sender == Sender.GEMINI) {
+                        if (lastIndex >= 0 && newList[lastIndex].senderType == SenderType.GEMINI) {
                             val currentMessage = newList[lastIndex].message
                             newList[lastIndex] =
                                 if (currentMessage == "Thinking...")
@@ -90,10 +115,46 @@ class MainViewModel : ViewModel() {
                                 else
                                     newList[lastIndex].copy(message = currentMessage + chunk)
                         }
-                        _session.value.copy(messages = newList)
+                        session.copy(messages = newList)
                     }
                 }
             }
+            val response = responseBuilder.toString()
+            saveMessage(text = response, sender = SenderType.GEMINI.name)
+        }
+    }
+
+    val messages = chatRepository.getAllMessages()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            initialValue = emptyList()
+        )
+
+    fun saveMessage(text: String, sender: String) {
+        viewModelScope.launch {
+            val messageEntity = MessageEntity(
+                message = text,
+                sender = sender,
+                timeStamp = System.currentTimeMillis()
+            )
+            chatRepository.insertMessages(messageEntity)
+        }
+    }
+
+    fun getMessages(): List<MessageEntity> {
+        val messages = chatRepository.getAllMessages()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                initialValue = emptyList()
+            )
+        return messages.value
+    }
+
+    fun clearChat() {
+        viewModelScope.launch {
+            chatRepository.clearChat()
         }
     }
 }

@@ -3,7 +3,7 @@ package com.sri.androidmentorchat
 import kotlinx.coroutines.flow.Flow
 
 class ChatRunner(
-    private val repository: MainRepository,
+    private val repository: AiRepository,
     private val agent: Agent
 ) {
 

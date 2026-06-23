@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,17 +43,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sri.androidmentorchat.ui.theme.GeminiChatTheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
 
         setContent {
             GeminiChatTheme {
@@ -93,8 +95,9 @@ fun ChatScreen(
             .fillMaxSize()
             .imePadding()
     ) {
-        val chatHistoryList = viewModel.session.collectAsStateWithLifecycle().value.messages
+        var chatHistoryList = viewModel.chatSession.collectAsStateWithLifecycle().value.messages
         val listState = rememberLazyListState()
+        val messages = viewModel.messages.collectAsStateWithLifecycle()
 
         LaunchedEffect(chatHistoryList.size) {
             if (chatHistoryList.isNotEmpty()) {
@@ -114,9 +117,21 @@ fun ChatScreen(
                 .weight(1f)
                 .fillMaxSize()
         ) {
+            if (agentType == AgentType.ANDROID_MENTOR && chatHistoryList.isEmpty()) {
+                chatHistoryList = messages.value.map { message ->
+                    ChatHistory(
+                        senderType = SenderType.valueOf(message.sender),
+                        message = message.message
+                    )
+                }
+                listState.requestScrollToItem(
+                    index = chatHistoryList.size,
+                    scrollOffset = Int.MAX_VALUE
+                )
+            }
             items(chatHistoryList.size) { index ->
                 val chatHistory = chatHistoryList[index]
-                val isGemini = chatHistory.sender == Sender.GEMINI
+                val isGemini = chatHistory.senderType == SenderType.GEMINI
 
                 Column(
                     modifier = Modifier
@@ -258,10 +273,23 @@ fun DifficultySelector(viewModel: MainViewModel) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun GreetingPreview() {
     GeminiChatTheme {
-        ChatScreen(MainViewModel())
+        ChatScreen(
+            MainViewModel(
+                AiRepository(),
+                ChatRepository(object : MessageDao {
+                    override suspend fun insertMessage(message: MessageEntity) {}
+
+                    override fun getAllMessages(): Flow<List<MessageEntity>> {
+                        return flowOf(emptyList())
+                    }
+
+                    override suspend fun deleteAllMessages() {}
+                })
+            )
+        )
     }
 }

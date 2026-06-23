@@ -1,11 +1,6 @@
 package com.sri.androidmentorchat
 
 data class ChatHistory(
-    val sender: Sender,
+    val senderType: SenderType,
     var message: String
 )
-
-enum class Sender {
-    USER,
-    GEMINI
-}

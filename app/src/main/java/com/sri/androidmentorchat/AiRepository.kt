@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class MainRepository {
+class AiRepository {
 
     private val client by lazy {
         Client.builder()
@@ -26,7 +26,7 @@ class MainRepository {
         difficultyLevel: DifficultyLevel?
     ): Flow<String> = flow {
         val fullPrompt = chatHistory.joinToString("\n") { history ->
-            "${history.sender.name}: ${history.message}"
+            "${history.senderType.name}: ${history.message}"
         }
 
         try {
