@@ -6,7 +6,7 @@ data class AgentResponse(
 )
 
 data class Agent(
-    val name:String,
-    val display_name:String,
-    val description:String
+    val name: String,
+    val display_name: String,
+    val description: String
 )
