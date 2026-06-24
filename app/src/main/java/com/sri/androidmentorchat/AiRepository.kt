@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 class AiRepository {
 
@@ -20,7 +21,6 @@ class AiRepository {
     }
 
     fun streamResponse(
-        model: AIModel,
         agent: Agent,
         chatHistory: List<ChatHistory>,
         difficultyLevel: DifficultyLevel?
@@ -32,7 +32,7 @@ class AiRepository {
         try {
             Log.d("TAG", "request sent - $fullPrompt")
             val stream = client.models.generateContentStream(
-                model.modelId,
+                AIModel.GEMINI_3_1_FLASH_LITE.modelId,
                 fullPrompt,
                 createConfig(agent, difficultyLevel)
             )
@@ -48,6 +48,28 @@ class AiRepository {
             emit("Error: ${e.message}")
         }
     }.flowOn(Dispatchers.IO)
+
+    suspend fun getGeminiSummary(
+        chatHistory: List<ChatHistory>
+    ): String = withContext(Dispatchers.IO) {
+        val prompt = chatHistory.joinToString("\n") { history ->
+            "${history.senderType.name}: ${history.message}"
+        }
+        try {
+            val response = client.models.generateContent(
+                AIModel.GEMINI_3_1_FLASH_LITE.modelId,
+                prompt,
+                GenerateContentConfig.builder().build()
+            )
+            return@withContext response.text() ?: ""
+        } catch (e: ClientException) {
+            e.printStackTrace()
+            return@withContext "Client error (${e.code()}): ${e.message}"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return@withContext "Error: ${e.message}"
+        }
+    }
 
     fun createConfig(
         agent: Agent,

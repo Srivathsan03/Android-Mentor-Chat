@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.sri.androidmentorchat.moltbook.CreatePostUseCase
+import com.sri.androidmentorchat.moltbook.MoltbookRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +20,8 @@ import java.util.UUID
 
 class MainViewModel(
     private val aiRepository: AiRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
+    private val createPostUseCase: CreatePostUseCase
 ) : ViewModel() {
 
     companion object {
@@ -29,7 +32,8 @@ class MainViewModel(
                 val chatRepository = ChatRepository(
                     MentorDatabase.getDatabase(application).messageDao()
                 )
-                MainViewModel(aiRepository, chatRepository)
+                val createPostUseCase = CreatePostUseCase(MoltbookRepository())
+                MainViewModel(aiRepository, chatRepository, createPostUseCase)
             }
         }
     }
@@ -89,9 +93,7 @@ class MainViewModel(
         }
     }
 
-    fun sendMessage(
-        prompt: String
-    ) {
+    fun sendMessage(prompt: String) {
         val userMessage = ChatHistory(senderType = SenderType.USER, message = prompt)
         _chatSession.update { it.copy(messages = it.messages + userMessage) }
         saveMessage(text = prompt, sender = SenderType.USER.name)
@@ -108,7 +110,6 @@ class MainViewModel(
             }
 
             chatRunner.streamResponse(
-                model = AIModel.GEMINI_3_1_FLASH_LITE,
                 session = _chatSession.value,
                 difficultyLevel = _difficultyLevel.value
             ).collect { chunk ->
@@ -163,6 +164,16 @@ class MainViewModel(
     fun clearChat() {
         viewModelScope.launch {
             chatRepository.clearChat()
+        }
+    }
+
+    fun shareChatToMoltbook() {
+        viewModelScope.launch {
+            val summary = chatRunner.getGeminiSummary(session = _chatSession.value)
+            createPostUseCase.invoke(
+                title = "Android Mentor Chat",
+                content = summary
+            )
         }
     }
 }

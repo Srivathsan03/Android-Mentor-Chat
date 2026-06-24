@@ -8,15 +8,19 @@ class ChatRunner(
 ) {
 
     fun streamResponse(
-        model: AIModel,
         session: ChatSession,
         difficultyLevel: DifficultyLevel?
     ): Flow<String> {
         return repository.streamResponse(
-            model = model,
             agent = agent,
             chatHistory = session.messages,
             difficultyLevel = difficultyLevel
         )
+    }
+
+    suspend fun getGeminiSummary(
+        session: ChatSession
+    ): String {
+        return repository.getGeminiSummary(session.messages)
     }
 }

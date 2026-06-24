@@ -11,6 +11,7 @@ val localProperties = Properties()
 localProperties.load(rootProject.file("local.properties").inputStream())
 
 val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
+val moltbookApiKey = localProperties.getProperty("MOLTBOOK_API_KEY")
 
 android {
     namespace = "com.sri.androidmentorchat"
@@ -29,6 +30,11 @@ android {
             "String",
             "GEMINI_API_KEY",
             "\"$geminiApiKey\""
+        )
+        buildConfigField(
+            "String",
+            "MOLTBOOK_API_KEY",
+            "\"$moltbookApiKey\""
         )
     }
 
@@ -85,6 +91,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

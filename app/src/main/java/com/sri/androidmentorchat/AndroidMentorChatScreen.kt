@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -23,9 +24,14 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.TooltipState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -62,6 +68,7 @@ fun AndroidMentorChatScreen(
         selectedAgent = selectedAgent,
         difficultyLevel = difficultyLevel,
         onClearChat = viewModel::clearChatSession,
+        shareChat = viewModel::shareChatToMoltbook,
         onSendMessage = viewModel::sendMessage,
         onSelectAgent = viewModel::selectAgent,
         onSelectDifficulty = viewModel::selectDifficulty,
@@ -78,6 +85,7 @@ fun AndroidMentorChatScreenUi(
     selectedAgent: Agent,
     difficultyLevel: DifficultyLevel?,
     onClearChat: () -> Unit,
+    shareChat: () -> Unit,
     onSendMessage: (String) -> Unit,
     onSelectAgent: (AgentType) -> Unit,
     onSelectDifficulty: (DifficultyLevel) -> Unit,
@@ -94,18 +102,58 @@ fun AndroidMentorChatScreenUi(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 actions = {
-                    IconButton(onClick = onClearChat) {
-                        if (isChatClearable) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Clear Chat",
-                                tint = Color.Red
-                            )
+                    listOf(
+                        TooltipBox(
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                spacingBetweenTooltipAndAnchor = 4.dp,
+                                positioning = TooltipAnchorPosition.Below
+                            ),
+                            tooltip = {
+                                PlainTooltip {
+                                    Text("Clear Chat")
+                                }
+                            },
+                            state = TooltipState()
+                        ) {
+                            IconButton(
+                                onClick = onClearChat
+                            ) {
+                                if (isChatClearable) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Clear Chat",
+                                        tint = Color.Red
+                                    )
+                                }
+                            }
+                        },
+                        TooltipBox(
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                spacingBetweenTooltipAndAnchor = 4.dp,
+                                positioning = TooltipAnchorPosition.Below
+                            ),
+                            tooltip = {
+                                PlainTooltip {
+                                    Text("Share to Moltbook")
+                                }
+                            },
+                            state = TooltipState()
+                        ) {
+                            IconButton(
+                                onClick = shareChat
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = "Share to Moltbook",
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
                         }
-                    }
+                    )
                 }
             )
-        }) { innerPadding ->
+        }
+    ) { innerPadding ->
         AndroidMentorChatScreenContent(
             modifier = Modifier.padding(innerPadding),
             chatSession = chatSession,
@@ -331,15 +379,21 @@ fun DifficultySelector(
 fun Preview_Chat() {
     AndroidMentorChatTheme {
         AndroidMentorChatScreenUi(
-            chatSession = ChatSession("preview", listOf(
-                ChatHistory(SenderType.USER, "Hello"),
-                ChatHistory(SenderType.GEMINI, "Hi! I am your Android Mentor. How can I help you today?")
-            )),
+            chatSession = ChatSession(
+                "preview", listOf(
+                    ChatHistory(SenderType.USER, "Hello"),
+                    ChatHistory(
+                        SenderType.GEMINI,
+                        "Hi! I am your Android Mentor. How can I help you today?"
+                    )
+                )
+            ),
             isChatClearable = true,
             messages = emptyList(),
             selectedAgent = AgentType.ANDROID_MENTOR.agent,
             difficultyLevel = DifficultyLevel.BEGINNER,
             onClearChat = {},
+            shareChat = {},
             onSendMessage = {},
             onSelectAgent = {},
             onSelectDifficulty = {},
