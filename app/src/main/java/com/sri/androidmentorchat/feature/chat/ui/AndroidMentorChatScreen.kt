@@ -26,6 +26,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TooltipAnchorPosition
@@ -61,13 +63,14 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun AndroidMentorChatScreen(
-    viewModel: MainViewModel = viewModel(factory = MainViewModel.Factory)
+    viewModel: AndroidMentorChatViewModel = viewModel(factory = AndroidMentorChatViewModel.Factory)
 ) {
     val chatSession by viewModel.chatSession.collectAsStateWithLifecycle()
     val isChatClearable by viewModel.isChatClearable.collectAsStateWithLifecycle()
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val selectedAgent by viewModel.selectedAgent.collectAsStateWithLifecycle()
     val difficultyLevel by viewModel.difficultyLevel.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     AndroidMentorChatScreenUi(
         chatSession = chatSession,
@@ -75,12 +78,17 @@ fun AndroidMentorChatScreen(
         messages = messages,
         selectedAgent = selectedAgent,
         difficultyLevel = difficultyLevel,
+        snackbarHostState = snackbarHostState,
         onClearChat = viewModel::clearChatSession,
-        shareChat = viewModel::shareChatToMoltbook,
         onSendMessage = viewModel::sendMessage,
         onSelectAgent = viewModel::selectAgent,
         onSelectDifficulty = viewModel::selectDifficulty,
-        onUpdateChatSession = viewModel::updateChatSession
+        onUpdateChatSession = viewModel::updateChatSession,
+        showShareDialog = viewModel::showShareDialog
+    )
+    ShareToMoltbookDialog(
+        viewModel = viewModel,
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -92,16 +100,18 @@ fun AndroidMentorChatScreenUi(
     messages: List<MessageEntity>,
     selectedAgent: Agent,
     difficultyLevel: DifficultyLevel?,
+    snackbarHostState: SnackbarHostState,
     onClearChat: () -> Unit,
-    shareChat: () -> Unit,
     onSendMessage: (String) -> Unit,
     onSelectAgent: (AgentType) -> Unit,
     onSelectDifficulty: (DifficultyLevel) -> Unit,
     onUpdateChatSession: (List<ChatHistory>) -> Unit,
+    showShareDialog:() -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
@@ -148,7 +158,7 @@ fun AndroidMentorChatScreenUi(
                             state = TooltipState()
                         ) {
                             IconButton(
-                                onClick = shareChat
+                                onClick = showShareDialog
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Share,
@@ -400,12 +410,13 @@ fun Preview_Chat() {
             messages = emptyList(),
             selectedAgent = AgentType.ANDROID_MENTOR.agent,
             difficultyLevel = DifficultyLevel.BEGINNER,
+            snackbarHostState = remember { SnackbarHostState() },
             onClearChat = {},
-            shareChat = {},
             onSendMessage = {},
             onSelectAgent = {},
             onSelectDifficulty = {},
-            onUpdateChatSession = {}
+            onUpdateChatSession = {},
+            showShareDialog = {}
         )
     }
 }

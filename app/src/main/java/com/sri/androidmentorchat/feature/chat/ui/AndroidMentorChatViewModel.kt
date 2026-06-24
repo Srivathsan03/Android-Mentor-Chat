@@ -1,6 +1,7 @@
 package com.sri.androidmentorchat.feature.chat.ui
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -29,7 +30,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.collections.plus
 
-class MainViewModel(
+class AndroidMentorChatViewModel(
     private val geminiRepository: GeminiRepository,
     private val chatHistoryRepository: ChatHistoryRepository,
     private val createPostUseCase: CreatePostUseCase
@@ -45,7 +46,7 @@ class MainViewModel(
                     MentorDatabase.getDatabase(application).messageDao()
                 )
                 val createPostUseCase = CreatePostUseCase(MoltbookRepository())
-                MainViewModel(geminiRepository, chatHistoryRepository, createPostUseCase)
+                AndroidMentorChatViewModel(geminiRepository, chatHistoryRepository, createPostUseCase)
             }
         }
     }
@@ -73,6 +74,9 @@ class MainViewModel(
 
     private val _isChatClearable = MutableStateFlow(true)
     val isChatClearable: StateFlow<Boolean> = _isChatClearable.asStateFlow()
+
+    private val _shareDialogVisible = MutableStateFlow(false)
+    val shareDialogVisible: StateFlow<Boolean> = _shareDialogVisible.asStateFlow()
 
     fun selectAgent(agentType: AgentType) {
         _selectedAgent.value = agentType.agent
@@ -179,13 +183,33 @@ class MainViewModel(
         }
     }
 
-    fun shareChatToMoltbook() {
+    fun shareChatToMoltbook(snackBarContent:(String) -> Unit) {
         viewModelScope.launch {
-            val summary = chatRunner.getGeminiSummary(session = _chatSession.value)
-            createPostUseCase.invoke(
-                title = "Android Mentor Chat",
-                content = summary
-            )
+            try {
+                val summary = chatRunner.getGeminiSummary(
+                    session = _chatSession.value
+                )
+                Log.d("TAG", "shareChatToMoltbook: summary = $summary")
+
+                createPostUseCase.createPost(
+                    title = "Android Mentor Chat",
+                    content = summary
+                )
+
+                snackBarContent("Post created successfully")
+            } catch (e: Exception) {
+                Log.e("Moltbook", "Failed to share", e)
+
+                snackBarContent("Failed to share")
+            }
         }
+    }
+
+    fun showShareDialog() {
+        _shareDialogVisible.value = true
+    }
+
+    fun dismissShareDialog() {
+        _shareDialogVisible.value = false
     }
 }
