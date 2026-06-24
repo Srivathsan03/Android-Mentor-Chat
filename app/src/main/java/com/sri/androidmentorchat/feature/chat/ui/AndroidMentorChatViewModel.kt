@@ -7,9 +7,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.sri.androidmentorchat.feature.chat.domain.ChatHistoryRepository
-import com.sri.androidmentorchat.feature.chat.domain.ChatRunner
-import com.sri.androidmentorchat.feature.chat.data.GeminiRepository
 import com.sri.androidmentorchat.core.database.MentorDatabase
 import com.sri.androidmentorchat.core.database.MessageEntity
 import com.sri.androidmentorchat.core.model.Agent
@@ -18,8 +15,11 @@ import com.sri.androidmentorchat.core.model.ChatHistory
 import com.sri.androidmentorchat.core.model.ChatSession
 import com.sri.androidmentorchat.core.model.DifficultyLevel
 import com.sri.androidmentorchat.core.model.SenderType
-import com.sri.androidmentorchat.feature.moltbook.domain.CreatePostUseCase
+import com.sri.androidmentorchat.feature.chat.data.GeminiRepository
+import com.sri.androidmentorchat.feature.chat.domain.ChatHistoryRepository
+import com.sri.androidmentorchat.feature.chat.domain.ChatRunner
 import com.sri.androidmentorchat.feature.moltbook.data.MoltbookRepository
+import com.sri.androidmentorchat.feature.moltbook.domain.CreatePostUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
-import kotlin.collections.plus
 
 class AndroidMentorChatViewModel(
     private val geminiRepository: GeminiRepository,
@@ -46,7 +45,11 @@ class AndroidMentorChatViewModel(
                     MentorDatabase.getDatabase(application).messageDao()
                 )
                 val createPostUseCase = CreatePostUseCase(MoltbookRepository())
-                AndroidMentorChatViewModel(geminiRepository, chatHistoryRepository, createPostUseCase)
+                AndroidMentorChatViewModel(
+                    geminiRepository,
+                    chatHistoryRepository,
+                    createPostUseCase
+                )
             }
         }
     }
@@ -112,7 +115,8 @@ class AndroidMentorChatViewModel(
     fun sendMessage(prompt: String) {
         val userMessage = ChatHistory(senderType = SenderType.USER, message = prompt)
         _chatSession.update { it.copy(messages = it.messages + userMessage) }
-        saveMessage(text = prompt, sender = SenderType.USER.name)
+        if (_selectedAgent.value == AgentType.ANDROID_MENTOR.agent)
+            saveMessage(text = prompt, sender = SenderType.USER.name)
 
         val responseBuilder = StringBuilder()
         viewModelScope.launch {
@@ -147,7 +151,8 @@ class AndroidMentorChatViewModel(
                 }
             }
             val response = responseBuilder.toString()
-            saveMessage(text = response, sender = SenderType.GEMINI.name)
+            if (_selectedAgent.value == AgentType.ANDROID_MENTOR.agent)
+                saveMessage(text = response, sender = SenderType.GEMINI.name)
         }
     }
 
@@ -183,7 +188,7 @@ class AndroidMentorChatViewModel(
         }
     }
 
-    fun shareChatToMoltbook(snackBarContent:(String) -> Unit) {
+    fun shareChatToMoltbook(snackBarContent: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val summary = chatRunner.getGeminiSummary(
