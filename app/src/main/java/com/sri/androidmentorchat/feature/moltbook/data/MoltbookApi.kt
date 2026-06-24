@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat.moltbook
+package com.sri.androidmentorchat.feature.moltbook.data
 
 import retrofit2.http.Body
 import retrofit2.http.GET

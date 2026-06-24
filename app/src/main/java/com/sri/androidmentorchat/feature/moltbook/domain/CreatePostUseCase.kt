@@ -1,4 +1,8 @@
-package com.sri.androidmentorchat.moltbook
+package com.sri.androidmentorchat.feature.moltbook.domain
+
+import com.sri.androidmentorchat.feature.moltbook.data.MoltbookRepository
+import com.sri.androidmentorchat.feature.moltbook.data.PostRequest
+import com.sri.androidmentorchat.feature.moltbook.data.PostResponse
 
 class CreatePostUseCase(
     private val repository: MoltbookRepository

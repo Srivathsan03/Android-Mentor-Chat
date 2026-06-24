@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.core.model
 
 data class ChatSession(
     val chatId: String,

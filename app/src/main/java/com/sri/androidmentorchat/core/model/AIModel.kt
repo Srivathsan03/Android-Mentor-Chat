@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.core.model
 
 enum class AIModel(val modelId: String) {
     // Gemini 3.x Series (Latest Frontier)

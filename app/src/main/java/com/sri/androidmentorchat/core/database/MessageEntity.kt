@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.core.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat.moltbook
+package com.sri.androidmentorchat.feature.moltbook.data
 
 data class AgentResponse(
     val success: Boolean,

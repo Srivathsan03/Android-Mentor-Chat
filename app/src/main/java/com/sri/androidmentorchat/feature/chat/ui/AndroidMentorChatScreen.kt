@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.feature.chat.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -48,7 +48,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sri.androidmentorchat.ui.theme.AndroidMentorChatTheme
+import com.sri.androidmentorchat.R
+import com.sri.androidmentorchat.core.database.MessageEntity
+import com.sri.androidmentorchat.core.model.Agent
+import com.sri.androidmentorchat.core.model.AgentType
+import com.sri.androidmentorchat.core.model.ChatHistory
+import com.sri.androidmentorchat.core.model.ChatSession
+import com.sri.androidmentorchat.core.model.DifficultyLevel
+import com.sri.androidmentorchat.core.model.SenderType
+import com.sri.androidmentorchat.core.theme.AndroidMentorChatTheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable

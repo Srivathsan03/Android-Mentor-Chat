@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat.ui.theme
+package com.sri.androidmentorchat.core.theme
 
 import androidx.compose.ui.graphics.Color
 

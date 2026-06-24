@@ -1,9 +1,13 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.feature.chat.domain
 
+import com.sri.androidmentorchat.feature.chat.data.GeminiRepository
+import com.sri.androidmentorchat.core.model.Agent
+import com.sri.androidmentorchat.core.model.ChatSession
+import com.sri.androidmentorchat.core.model.DifficultyLevel
 import kotlinx.coroutines.flow.Flow
 
 class ChatRunner(
-    private val repository: AiRepository,
+    private val repository: GeminiRepository,
     private val agent: Agent
 ) {
 

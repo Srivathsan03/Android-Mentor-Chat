@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.core.database
 
 import android.content.Context
 import androidx.room.Database

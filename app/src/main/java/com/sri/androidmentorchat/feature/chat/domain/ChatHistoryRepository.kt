@@ -1,8 +1,10 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.feature.chat.domain
 
+import com.sri.androidmentorchat.core.database.MessageDao
+import com.sri.androidmentorchat.core.database.MessageEntity
 import kotlinx.coroutines.flow.Flow
 
-class ChatRepository(
+class ChatHistoryRepository(
     private val messageDao: MessageDao
 ) {
 

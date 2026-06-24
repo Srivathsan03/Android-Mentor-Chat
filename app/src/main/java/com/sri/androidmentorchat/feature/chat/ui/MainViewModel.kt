@@ -1,14 +1,24 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.feature.chat.ui
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.sri.androidmentorchat.moltbook.CreatePostUseCase
-import com.sri.androidmentorchat.moltbook.MoltbookRepository
+import com.sri.androidmentorchat.feature.chat.domain.ChatHistoryRepository
+import com.sri.androidmentorchat.feature.chat.domain.ChatRunner
+import com.sri.androidmentorchat.feature.chat.data.GeminiRepository
+import com.sri.androidmentorchat.core.database.MentorDatabase
+import com.sri.androidmentorchat.core.database.MessageEntity
+import com.sri.androidmentorchat.core.model.Agent
+import com.sri.androidmentorchat.core.model.AgentType
+import com.sri.androidmentorchat.core.model.ChatHistory
+import com.sri.androidmentorchat.core.model.ChatSession
+import com.sri.androidmentorchat.core.model.DifficultyLevel
+import com.sri.androidmentorchat.core.model.SenderType
+import com.sri.androidmentorchat.feature.moltbook.domain.CreatePostUseCase
+import com.sri.androidmentorchat.feature.moltbook.data.MoltbookRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,23 +27,25 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
+import kotlin.collections.plus
 
 class MainViewModel(
-    private val aiRepository: AiRepository,
-    private val chatRepository: ChatRepository,
+    private val geminiRepository: GeminiRepository,
+    private val chatHistoryRepository: ChatHistoryRepository,
     private val createPostUseCase: CreatePostUseCase
 ) : ViewModel() {
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val application = (this[APPLICATION_KEY] as Application)
-                val aiRepository = AiRepository()
-                val chatRepository = ChatRepository(
+                val application =
+                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
+                val geminiRepository = GeminiRepository()
+                val chatHistoryRepository = ChatHistoryRepository(
                     MentorDatabase.getDatabase(application).messageDao()
                 )
                 val createPostUseCase = CreatePostUseCase(MoltbookRepository())
-                MainViewModel(aiRepository, chatRepository, createPostUseCase)
+                MainViewModel(geminiRepository, chatHistoryRepository, createPostUseCase)
             }
         }
     }
@@ -55,7 +67,7 @@ class MainViewModel(
     val chatSession = _chatSession.asStateFlow()
 
     var chatRunner: ChatRunner = ChatRunner(
-        repository = aiRepository,
+        repository = geminiRepository,
         agent = _selectedAgent.value
     )
 
@@ -72,7 +84,7 @@ class MainViewModel(
             messages = listOf()
         )
         chatRunner = ChatRunner(
-            repository = aiRepository,
+            repository = geminiRepository,
             agent = agentType.agent
         )
     }
@@ -143,7 +155,7 @@ class MainViewModel(
         )
     }
 
-    val messages = chatRepository.getAllMessages()
+    val messages = chatHistoryRepository.getAllMessages()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -157,13 +169,13 @@ class MainViewModel(
                 sender = sender,
                 timeStamp = System.currentTimeMillis()
             )
-            chatRepository.insertMessages(messageEntity)
+            chatHistoryRepository.insertMessages(messageEntity)
         }
     }
 
     fun clearChat() {
         viewModelScope.launch {
-            chatRepository.clearChat()
+            chatHistoryRepository.clearChat()
         }
     }
 

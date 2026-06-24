@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat.moltbook
+package com.sri.androidmentorchat.feature.moltbook.data
 
 class MoltbookRepository {
 

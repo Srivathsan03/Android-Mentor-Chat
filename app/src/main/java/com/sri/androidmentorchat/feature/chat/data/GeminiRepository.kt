@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat
+package com.sri.androidmentorchat.feature.chat.data
 
 import android.util.Log
 import com.google.genai.Client
@@ -6,13 +6,18 @@ import com.google.genai.errors.ClientException
 import com.google.genai.types.Content
 import com.google.genai.types.GenerateContentConfig
 import com.google.genai.types.Part
+import com.sri.androidmentorchat.BuildConfig
+import com.sri.androidmentorchat.core.model.AIModel
+import com.sri.androidmentorchat.core.model.Agent
+import com.sri.androidmentorchat.core.model.ChatHistory
+import com.sri.androidmentorchat.core.model.DifficultyLevel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
-class AiRepository {
+class GeminiRepository {
 
     private val client by lazy {
         Client.builder()

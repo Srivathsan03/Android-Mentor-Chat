@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat.moltbook
+package com.sri.androidmentorchat.feature.moltbook.data
 
 import com.sri.androidmentorchat.BuildConfig
 import okhttp3.OkHttpClient

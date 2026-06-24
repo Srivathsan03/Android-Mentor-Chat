@@ -1,4 +1,4 @@
-package com.sri.androidmentorchat.ui.theme
+package com.sri.androidmentorchat.core.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
