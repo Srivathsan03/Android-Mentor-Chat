@@ -83,8 +83,8 @@ class AndroidMentorChatViewModel(
 
     fun selectAgent(agentType: AgentType) {
         _selectedAgent.value = agentType.agent
-        if (!agentType.agent.supportsDifficulty)
-            _difficultyLevel.value = null
+        _difficultyLevel.value =
+            if (!agentType.agent.supportsDifficulty) null else DifficultyLevel.BEGINNER
         _isChatClearable.value = agentType.agent == AgentType.ANDROID_MENTOR.agent
         _chatSession.value = ChatSession(
             chatId = UUID.randomUUID().toString(),
