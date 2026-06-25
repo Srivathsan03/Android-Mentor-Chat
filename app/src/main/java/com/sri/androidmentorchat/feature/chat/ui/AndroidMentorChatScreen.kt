@@ -252,7 +252,7 @@ fun AndroidMentorChatScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
-                    horizontalAlignment = if (isGemini) Alignment.End else Alignment.Start
+                    horizontalAlignment = if (isGemini) Alignment.Start else Alignment.End
                 ) {
                     MarkdownText(
                         modifier = Modifier
